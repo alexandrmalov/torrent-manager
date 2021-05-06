@@ -1,17 +1,17 @@
 const path = require('path');
 const childProcess = require('child_process');
-let {torrentClientPath} = require('../../config');
+const config = require('../../config');
 const log = require('./log');
 const {readAllFile} = require('./fs');
 
 const findIpFilterPath = async () => {
-    if (!torrentClientPath) {
-        torrentClientPath = await getProcessPath();
+    if (!config.torrentClientPath) {
+        config.torrentClientPath = await getProcessPath();
     }
 
-    const ipFilterPath = path.join(torrentClientPath, '..', 'ipfilter.dat');
-    if (torrentClientPath.endsWith('btweb.exe')) {
-        await loadLocalApiToken(torrentClientPath);
+    const ipFilterPath = path.join(config.torrentClientPath, '..', 'ipfilter.dat');
+    if (config.torrentClientPath.endsWith('btweb.exe')) {
+        await loadLocalApiToken(config.torrentClientPath);
     }
 
     log.info(`IP FILTER DIRECTORY:\n${ipFilterPath}`, '\n');
@@ -19,11 +19,10 @@ const findIpFilterPath = async () => {
     return ipFilterPath;
 };
 
-const loadLocalApiToken = async (path) => {
-    const userConfPath = path.join(torrentClientPath, '..', 'users.conf');
+const loadLocalApiToken = async (clientPath) => {
+    const userConfPath = path.join(clientPath, '..', 'users.conf');
     const userConfData = await readAllFile(userConfPath);
-
-    console.log('userConfData', userConfData);
+    config.localApiToken = userConfData.split('\t')[0];
 };
 
 const getProcessPath = async () => {
