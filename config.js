@@ -52,7 +52,6 @@ module.exports = {
 
     apiTorrentUrl: 'http://127.0.0.1',
     apiBttUrl: 'http://127.0.0.1',
-    authToken: '',
     localApiToken: '',
 
     /*

@@ -9,8 +9,7 @@ let token;
 
 const getToken = async () => {
     try {
-        if (config.authToken) return config.authToken;
-
+        if (config.localApiToken) return getWebToken(config.localApiToken);
         const html = await fetch(`${config.apiTorrentUrl}:${config.port}/gui/token.html`,
             {
                 headers: {
@@ -35,13 +34,26 @@ const getToken = async () => {
     }
 };
 
+const getWebToken = async (localAuth) => {
+    const html = await fetch(`${config.apiTorrentUrl}:${config.port}/gui/token.html?localauth=${localAuth}:`)
+        .then(res => {
+            return res.text();
+        });
+    const dom = new JSDOM(html);
+    const divTag = dom.window.document.querySelector('div');
+    if (!divTag) throw Error('Token not found');
+
+    const token = dom.window.document.querySelector('div').textContent;
+    return `${token}&localauth=${localAuth}:`;
+};
+
 const requestWithToken = async (url) => {
     if (!token) {
         token = await getToken();
     }
 
     let headers = {};
-    if (!config.authToken) {
+    if (!config.localApiToken) {
         headers = {
             Cookie: config.guid,
             Authorization: 'Basic ' + Buffer.from(`${config.username}:${config.password}`).toString('base64'),
