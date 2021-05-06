@@ -53,6 +53,7 @@ module.exports = {
     apiTorrentUrl: 'http://127.0.0.1',
     apiBttUrl: 'http://127.0.0.1',
     authToken: '',
+    localApiToken: '',
 
     /*
     * Включение автоматической настройки.
@@ -87,6 +88,7 @@ module.exports = {
         max_ul_rate: 0, // лимит отдачи
         max_ul_rate_seed_flag: 0, // включить альтернативную скорость отдачи если нет загрузок. Значения: 0, 1
         max_ul_rate_seed: 0, // альтернативная скорость
+        // max_active_seeds: 1000,
 
         // 'webui.enable': 1,
         // 'webui.enable_listen': 1,

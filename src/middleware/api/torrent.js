@@ -40,13 +40,18 @@ const requestWithToken = async (url) => {
         token = await getToken();
     }
 
+    let headers = {};
+    if (!config.authToken) {
+        headers = {
+            Cookie: config.guid,
+            Authorization: 'Basic ' + Buffer.from(`${config.username}:${config.password}`).toString('base64'),
+        }
+    }
+
     try {
         return fetch(url + `&token=${token}`,
             {
-                headers: {
-                    Cookie: config.guid,
-                    Authorization: 'Basic ' + Buffer.from(`${config.username}:${config.password}`).toString('base64'),
-                }
+                headers,
             })
             .then(res => {
                 if (res.headers.raw()['set-cookie'] && res.headers.raw()['set-cookie'].find(el => el.startsWith('GUID='))) {
