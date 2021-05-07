@@ -26,8 +26,12 @@ const filterLibtorrent = peer => peer.client.startsWith('libtorrent') && peer.ve
 const blockPeers = async (peers) => {
     if (blockedIp.length > 100000) blockedIp = [];
 
+    const whiteList = ['qBit'];
     for (let i = 0; i < peers.length; i++) {
         const peer = peers[i];
+        const whitePeer = whiteList.find(wl => peer.client.includes(wl));
+        if (whitePeer) return;
+
         if (!filterMu(peer) &&
             !filterBit(peer) &&
             !filterMuMac(peer) &&
@@ -45,7 +49,6 @@ const blockPeers = async (peers) => {
 
 const parsePeersArray = async (peersArray) => {
     const peers = peersArray.filter(Array.isArray).flat().map(peer => {
-        console.log('peer', peer);
         const client = peer[5].trim();
         return {ip: peer[1], utp: peer[3], client, version: version(client)}
     });
