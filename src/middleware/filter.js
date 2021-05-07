@@ -43,17 +43,24 @@ const blockPeers = async (peers) => {
     await apiTorrent.requestWithToken(`${config.apiTorrentUrl}:${config.port}/gui/?action=setsetting&s=ipfilter.enable&v=1`);
 };
 
+const parsePeersArray = async (peersArray) => {
+    const peers = peersArray.filter(Array.isArray).flat().map(peer => {
+        console.log('peer', peer);
+        const client = peer[5].trim();
+        return {ip: peer[1], utp: peer[3], client, version: version(client)}
+    });
+
+    return peers;
+};
+
 const scan = async () => {
     if (!await getIpFilterPath()) {
         const ipFilterPath = await findIpFilterPath();
         await setIpFilterPath(ipFilterPath);
     }
 
-    let peers = await apiTorrent.getPeers();
-    peers = peers.filter(Array.isArray).flat().map(peer => {
-        const client = peer[5].trim();
-        return {ip: peer[1], utp: peer[3], client, version: version(client)}
-    });
+    const peersArray = await apiTorrent.getPeers();
+    const peers = await parsePeersArray(peersArray);
     await blockPeers(peers);
 }
 
